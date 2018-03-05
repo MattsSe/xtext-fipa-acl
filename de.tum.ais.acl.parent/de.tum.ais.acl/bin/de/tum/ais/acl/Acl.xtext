@@ -1,0 +1,9 @@
+grammar de.tum.ais.acl.Acl with org.eclipse.xtext.common.Terminals
+
+generate acl "http://www.tum.de/ais/acl/Acl"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
