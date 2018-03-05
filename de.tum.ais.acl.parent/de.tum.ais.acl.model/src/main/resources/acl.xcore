@@ -91,7 +91,7 @@ class StringExpression extends Expression {
 }
 
 interface NumberExpression extends Expression {
-	op float getNumberValue()
+	op double getNumberValue()
 	op String getStringValue() {
 		this.getNumberValue().toString
 	}
@@ -99,14 +99,14 @@ interface NumberExpression extends Expression {
 
 class IntegerExpression extends NumberExpression {
 	int value
-	op float getNumberValue() {
+	op double getNumberValue() {
 		value
 	}
 }
 
 class FloatExpression extends NumberExpression {
-	float value
-	op float getNumberValue() {
+	double value
+	op double getNumberValue() {
 		value
 	}
 }
