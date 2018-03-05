@@ -3,20 +3,80 @@
 	complianceLevel="8.0")
 package de.tum.ais.acl
 
+import java.net.URI
 import javax.xml.datatype.XMLGregorianCalendar
 
 type DateTime wraps XMLGregorianCalendar
 
-interface AclMessage{
+type URI wraps URI
+
+class AclMessage {
+	MessageType messageType
+	contains MessageParameter[] messageParameters
 }
 
 class Dummy {
 	String name
 }
 
+interface MessageParameter {
+}
+
+class SenderMessageParameter extends MessageParameter {
+	contains AgentIdentifier agentIdentifier
+}
+
+class RecieverMessageParameter extends MessageParameter {
+	contains AgentIdentifier[] agentIdentifiers
+}
+
+class ContentMessageParameter extends MessageParameter {
+	String content
+}
+
+interface ExpressionMessageParameter extends MessageParameter {
+	contains Expression expression
+}
+
+class ReplyWithMessageParameter extends ExpressionMessageParameter {
+}
+
+class ReplyByMessageParameter extends MessageParameter {
+	DateTime dateTime
+}
+
+class InReplyToMessageParameter extends ExpressionMessageParameter {
+}
+
+class ReplyToMessageParameter extends MessageParameter {
+	contains AgentIdentifier[] agentIdentifiers
+}
+
+class LanguageMessageParameter extends ExpressionMessageParameter {
+}
+
+class EncodingMessageParameter extends ExpressionMessageParameter {
+}
+
+class OntologyMessageParameter extends ExpressionMessageParameter {
+}
+
+class ConversationIdMessageParameter extends ExpressionMessageParameter {
+}
+
+class UserDefinedMessageParameter extends ExpressionMessageParameter {
+	String identifier
+}
+
+class ProtocolMessageParameter extends MessageParameter {
+	String protocol
+}
+
 class AgentIdentifier {
 	String name
+	URI[] addresses
 	contains Expression[] userDefinedParameter
+	contains AgentIdentifier[] resolvers
 }
 
 interface Expression {
