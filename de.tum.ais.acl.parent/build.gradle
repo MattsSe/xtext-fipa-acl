@@ -3,9 +3,11 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'org.xtext:xtext-gradle-plugin:1.0.18'
+		classpath 'org.xtext:xtext-gradle-plugin:1.0.19'
 	}
 }
+
+apply from: "${rootDir}/gradle/versions.gradle"
 
 subprojects {
 	ext.xtextVersion = '2.13.0-SNAPSHOT'
@@ -24,7 +26,7 @@ subprojects {
 	apply plugin: 'idea'
 	
 	group = 'de.tum.ais.acl'
-	version = '1.0.0-SNAPSHOT'
+	version = "$version"
 	
 	sourceCompatibility = '1.8'
 	targetCompatibility = '1.8'

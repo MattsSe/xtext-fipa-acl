@@ -1,1 +1,2 @@
 include 'de.tum.ais.acl'
+include 'de.tum.ais.acl.model'

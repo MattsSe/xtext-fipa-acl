@@ -1,0 +1,59 @@
+@Ecore(nsPrefix="acl", nsURI="http://www.tum.de/ais/acl/Acl")
+@GenModel(bundleManifest="false", modelDirectory="de.tum.ais.alc.model/src/main/src-gen", updateClasspath="false",
+	complianceLevel="8.0")
+package de.tum.ais.acl
+
+interface AclMessage{
+}
+class Dummy {
+	String name
+}
+/**
+ * @see http://www.fipa.org/specs/fipa00037/SC00037J.pdf
+ */
+enum CommucativeAct {
+	AcceptProposal
+	,
+	Agree
+	,
+	Cancel
+	,
+	CallForProposal
+	,
+	Confirm
+	,
+	DisConfirm
+	,
+	Failure
+	,
+	Inform
+	,
+	InformIf
+	,
+	InformRef
+	,
+	NotUnderstood
+	,
+	Propagate
+	,
+	Propose
+	,
+	Proxy
+	,
+	QueryIf
+	,
+	QueryRef
+	,
+	Refuse
+	,
+	RejectProposal
+	,
+	Request
+	,
+	RequestWhen
+	,
+	RequestWhenever
+	,
+	Subscribe
+}
+	
