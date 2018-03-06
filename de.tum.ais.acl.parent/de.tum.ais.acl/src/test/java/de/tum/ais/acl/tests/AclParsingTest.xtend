@@ -4,19 +4,37 @@
 package de.tum.ais.acl.tests
 
 import com.google.inject.Inject
+import de.tum.ais.acl.AclMessage
+import de.tum.ais.acl.MessageType
+import de.tum.ais.acl.SenderMessageParameter
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.Test
 import org.junit.runner.RunWith
-import de.tum.ais.acl.AclMessage
+
+import static org.junit.Assert.*
 
 @RunWith(XtextRunner)
 @InjectWith(AclInjectorProvider)
 class AclParsingTest {
 	@Inject
 	ParseHelper<AclMessage> parseHelper
-	
+
+	@Test def void messageTest() {
+		val model = '''
+			( request
+			 :sender ( agent-identifier :name SenderExample )
+			)
+		'''
+		val msg = parseHelper.parse(model)
+		assertNotNull(msg)
+		assertEquals(msg.messageType, MessageType.REQUEST)
+		assertEquals(1, msg.messageParameters.size)
+		val param = msg.messageParameters.head as SenderMessageParameter
+		assertEquals("SenderExample", param.agentIdentifier.name)
+	}
+
 	@Test
 	def void loadModel() {
 //		val result = parseHelper.parse('''

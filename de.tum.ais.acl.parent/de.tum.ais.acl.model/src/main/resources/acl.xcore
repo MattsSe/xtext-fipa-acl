@@ -16,17 +16,21 @@ class AclMessage {
 }
 
 interface MessageParameter {
+	op String getIdentifier()
 }
 
 class SenderMessageParameter extends MessageParameter {
+	unsettable String intendifier = "sender"
 	contains AgentIdentifier agentIdentifier
 }
 
 class RecieverMessageParameter extends MessageParameter {
+	unsettable String intendifier = "reciever"
 	contains AgentIdentifier[] agentIdentifiers
 }
 
 class ContentMessageParameter extends MessageParameter {
+	unsettable String intendifier = "content"
 	String content
 }
 
@@ -35,29 +39,37 @@ interface ExpressionMessageParameter extends MessageParameter {
 }
 
 class ReplyWithMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "reply-with"
 }
 
 class ReplyByMessageParameter extends MessageParameter {
+	unsettable String intendifier = "reply-by"
 	DateTime dateTime
 }
 
 class InReplyToMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "in-reply-to"
 }
 
 class ReplyToMessageParameter extends MessageParameter {
+	unsettable String intendifier = "reply-to"
 	contains AgentIdentifier[] agentIdentifiers
 }
 
 class LanguageMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "language"
 }
 
 class EncodingMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "encoding"
 }
 
 class OntologyMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "ontology"
 }
 
 class ConversationIdMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "conversation-id"
 }
 
 class UserDefinedMessageParameter extends ExpressionMessageParameter {
@@ -65,6 +77,7 @@ class UserDefinedMessageParameter extends ExpressionMessageParameter {
 }
 
 class ProtocolMessageParameter extends MessageParameter {
+	unsettable String intendifier = "protocol"
 	String protocol
 }
 
