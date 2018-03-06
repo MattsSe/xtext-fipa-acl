@@ -17,7 +17,9 @@ SenderMessageParameter returns SenderMessageParameter:
 	// TODO
 AgentIdentifier returns AgentIdentifier:
 	'(' 'agent-identifier' ':name' name=ID
-	(':addresses' '(' 'sequence' addresses+=URL ')')?
+	(':addresses' '(' 'sequence' (addresses+=URL)* ')')?
+	(':resolvers' '(' 'sequence' (resolvers+=AgentIdentifier)* ')')?
+	(USERDEFINED_PARAMETER userDefinedParameter+=Expression)*
 	')';
 
 Expression returns Expression:

@@ -15,10 +15,6 @@ class AclMessage {
 	contains MessageParameter[] messageParameters
 }
 
-class Dummy {
-	String name
-}
-
 interface MessageParameter {
 }
 

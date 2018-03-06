@@ -4,19 +4,18 @@
 package de.tum.ais.acl.tests
 
 import com.google.inject.Inject
-import de.tum.ais.acl.Dummy
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import de.tum.ais.acl.AclMessage
 
 @RunWith(XtextRunner)
 @InjectWith(AclInjectorProvider)
 class AclParsingTest {
 	@Inject
-	ParseHelper<Dummy> parseHelper
+	ParseHelper<AclMessage> parseHelper
 	
 	@Test
 	def void loadModel() {
