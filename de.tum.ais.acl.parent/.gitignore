@@ -1,0 +1,6 @@
+bin/
+target/
+xtend.gen/
+xtext_gen
+src-gen/
+build/
