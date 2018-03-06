@@ -2,6 +2,9 @@ grammar de.tum.ais.acl.Acl hidden(WS, ML_COMMENT, SL_COMMENT) //with org.eclipse
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 import "http://www.tum.de/ais/acl/Acl"
 
+// http://www.fipa.org/specs/fipa00037/SC00037J.pdf
+// http://www.fipa.org/specs/fipa00070/SC00070I.html
+// https://books.google.de/books?id=qlBt_IV5OXkC&pg=PA101&lpg=PA101&dq=acl+message+protocol&source=bl&ots=1cZV8BxSnR&sig=DJoaA8znJdqMw62uRByOGl2me7o&hl=de&sa=X&ved=0ahUKEwjsqq3ax9XZAhUQaVAKHX-vBCEQ6AEIfDAJ#v=onepage&q=acl%20message%20protocol&f=false
 AclMessage returns AclMessage:
 	'(' messageType=MessageType messageParameters+=MessageParameter ')';
 
@@ -11,9 +14,11 @@ MessageParameter returns MessageParameter:
 SenderMessageParameter returns SenderMessageParameter:
 	':sender' agentIdentifier=AgentIdentifier;
 
-// TODO
+	// TODO
 AgentIdentifier returns AgentIdentifier:
-	'(' 'agent-identifier' ':name' name=ID ')';
+	'(' 'agent-identifier' ':name' name=ID
+	(':addresses' '(' 'sequence' addresses+=URL ')')?
+	')';
 
 Expression returns Expression:
 	StringExpression | NumberExpression;
@@ -57,6 +62,36 @@ enum MessageType returns MessageType:
 	/**
  * +++++++++++++++ TERMINALS +++++++++++++++
  */
+terminal USERDEFINED_PARAMETER returns ecore::EString:
+	':x-' ID ('-' ID)*;
+
+	/**
+  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+  */
+terminal URL returns ecore::EString:
+	ID '://' LOGIN? HOST (':' DIGIT+)? ('/' PATH)? ('?' SEARCH)? ('#' ID)?;
+
+terminal fragment LOGIN:
+	ID ':' .* '@';
+
+terminal fragment HOST:
+	'/'? (ID ('.' ID)* | HOSTNUMBER);
+
+terminal HOSTNUMBER:
+	DIGIT+ '.' DIGIT+ '.' DIGIT+ '.' DIGIT+;
+
+terminal fragment PATH:
+	ID ('/' ID)*;
+
+terminal SEARCH:
+	SEARCHPARAMETER ('&' SEARCHPARAMETER)*;
+
+terminal fragment SEARCHPARAMETER:
+	ID ('=' (ID | DIGIT+ | HEX))?;
+
+terminal HEX:
+	('%' ('a'..'f' | 'A'..'F' | '0'..'9') ('a'..'f' | 'A'..'F' | '0'..'9'))+;
+
 terminal INTEGER returns ecore::EInt:
 	SIGN? DIGIT+;
 

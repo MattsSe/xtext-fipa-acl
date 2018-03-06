@@ -30,5 +30,12 @@ class AclValueConverter extends DefaultTerminalConverters {
 	public def IValueConverter<Double> FLOAT() {
 		floatValueConverter
 	}
+	@Inject
+	private UserdefinedParameterValueConverter userdefinedParameterValueConverter
+
+	@ValueConverter(rule="USERDEFINED_PARAMETER")
+	public def IValueConverter<String> UserdefinedParameter() {
+		userdefinedParameterValueConverter
+	}
 
 }
