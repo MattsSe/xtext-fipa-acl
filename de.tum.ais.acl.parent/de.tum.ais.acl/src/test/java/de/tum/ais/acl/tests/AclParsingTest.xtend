@@ -5,6 +5,9 @@ package de.tum.ais.acl.tests
 
 import com.google.inject.Inject
 import de.tum.ais.acl.AclMessage
+import de.tum.ais.acl.ContentMessageParameter
+import de.tum.ais.acl.InReplyToMessageParameter
+import de.tum.ais.acl.IntegerExpression
 import de.tum.ais.acl.MessageType
 import de.tum.ais.acl.SenderMessageParameter
 import org.eclipse.xtext.testing.InjectWith
@@ -14,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static org.junit.Assert.*
+import de.tum.ais.acl.FloatExpression
 
 @RunWith(XtextRunner)
 @InjectWith(AclInjectorProvider)
@@ -28,20 +32,30 @@ class AclParsingTest {
 			)
 		'''
 		val msg = parseHelper.parse(model)
-		assertNotNull(msg)
 		assertEquals(msg.messageType, MessageType.REQUEST)
+		assertNotNull(msg)
 		assertEquals(1, msg.messageParameters.size)
 		val param = msg.messageParameters.head as SenderMessageParameter
 		assertEquals("SenderExample", param.agentIdentifier.name)
 	}
 
-	@Test
-	def void loadModel() {
-//		val result = parseHelper.parse('''
-//			Hello Xtext!
-//		''')
-//		Assert.assertNotNull(result)
-//		val errors = result.eResource.errors
-//		Assert.assertTrue('''Unexpected errors: «errors.join(", ")»''', errors.isEmpty)
+	@Test def void expressionTest() {
+		val model = '''
+			( request
+			 :in-reply-to 12345
+			 :in-reply-to 12.345
+			 :content "test-content"
+			)
+		'''
+		val msg = parseHelper.parse(model)
+		assertNotNull(msg)
+		var param1 = msg.messageParameters.head as InReplyToMessageParameter
+		val expression1 = param1.expression as IntegerExpression
+		assertEquals(12345, expression1.value)
+		param1 = msg.messageParameters.get(1) as InReplyToMessageParameter
+		val expression2 = param1.expression as FloatExpression
+		assertEquals(12.345, expression2.value, 0)
+		val param2 = msg.messageParameters.get(2) as ContentMessageParameter
+		assertEquals("test-content", param2.content)
 	}
 }

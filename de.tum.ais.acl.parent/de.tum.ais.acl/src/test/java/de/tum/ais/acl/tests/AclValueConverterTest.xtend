@@ -59,6 +59,63 @@ class AclValueConverterTest {
 		}
 	}
 
+	@Test public def void floatExpressionToValueTest_1() {
+		val input = "10.0"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(10.0, e.getValue())
+		}
+	}
+	@Test public def void floatExpressionToValueTest_2() {
+		val input = "-10.0"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(-10.0, e.getValue())
+		}
+	}
+	@Test public def void floatExpressionToValueTest_3() {
+		val input = "10.0e5"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(100000.0, e.getValue())
+		}
+	}
+	@Test public def void floatExpressionToValueTest_4() {
+		val input = "10.0E-5"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(0.00001, e.getValue())
+		}
+	}
+	@Test public def void floatExpressionToValueTest_5() {
+		val input = "-10.0E-5"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(-0.00001, e.getValue())
+		}
+	}
+	@Test public def void floatExpressionToValueTest_6() {
+		val input = "-.0E-5"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(0.0, e.getValue())
+		}
+	}
+	@Test public def void floatExpressionToValueTest_7() {
+		val input = "-0.E-5"
+		try {
+			floatValueConverter.toValue(input, null)
+		} catch (ValueConverterWithValueException e) {
+			Assert.assertEquals(0.0, e.getValue())
+		}
+	}
+
 	public def <T> T get(Class<T> clazz) {
 		if (injector === null)
 			injector = Guice.createInjector()

@@ -16,8 +16,27 @@ class AclMessage {
 }
 
 interface MessageParameter {
-	op String getIdentifier()
+	 op String getIdentifier()
 }
+
+/* 
+enum MessageParameterType {
+	userdefined
+	sender = 1
+	reciever = 2
+	content = 2
+	reply-with = 3
+	reciever = 4
+	reciever = 5
+	reciever = 6
+	reciever = 7
+	reciever = 8
+	reciever = 9
+	reciever = 10
+	reciever = 11
+	reciever = 12
+}
+* */
 
 class SenderMessageParameter extends MessageParameter {
 	unsettable String intendifier = "sender"
@@ -119,6 +138,7 @@ class FloatExpression extends NumberExpression {
 		value
 	}
 }
+
 
 class NestedExpression extends NumberExpression {
 	contains Expression[] expressions

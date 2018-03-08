@@ -6,15 +6,74 @@ import "http://www.tum.de/ais/acl/Acl"
 // http://www.fipa.org/specs/fipa00070/SC00070I.html
 // https://books.google.de/books?id=qlBt_IV5OXkC&pg=PA101&lpg=PA101&dq=acl+message+protocol&source=bl&ots=1cZV8BxSnR&sig=DJoaA8znJdqMw62uRByOGl2me7o&hl=de&sa=X&ved=0ahUKEwjsqq3ax9XZAhUQaVAKHX-vBCEQ6AEIfDAJ#v=onepage&q=acl%20message%20protocol&f=false
 AclMessage returns AclMessage:
-	'(' messageType=MessageType messageParameters+=MessageParameter ')';
+	'(' messageType=MessageType (messageParameters+=MessageParameter)* ')';
 
 MessageParameter returns MessageParameter:
-	SenderMessageParameter;
+	SenderMessageParameter | 
+	RecieverMessageParameter | 
+	ContentMessageParameter |
+	ReplyWithMessageParameter |
+	ReplyByMessageParameter |
+	InReplyToMessageParameter |
+	ReplyToMessageParameter |
+	LanguageMessageParameter |
+	EncodingMessageParameter |
+	OntologyMessageParameter |
+	ProtocolMessageParameter |
+	ConversationIdMessageParameter |
+	UserDefinedMessageParameter
+	;
 
 SenderMessageParameter returns SenderMessageParameter:
 	':sender' agentIdentifier=AgentIdentifier;
 
-	// TODO
+RecieverMessageParameter returns RecieverMessageParameter:
+	{RecieverMessageParameter}
+	':receiver' '(' 'set' (agentIdentifiers+=AgentIdentifier)* ')';
+
+ContentMessageParameter returns ContentMessageParameter:
+	':content' content=STRING
+;
+
+ReplyWithMessageParameter returns ReplyWithMessageParameter:
+	':reply-with' expression=Expression
+;
+
+ReplyByMessageParameter returns ReplyByMessageParameter:
+	':reply-by' dateTime=DATE_TIME
+;
+
+InReplyToMessageParameter returns InReplyToMessageParameter:
+	':in-reply-to' expression=Expression
+;
+
+ReplyToMessageParameter returns ReplyToMessageParameter:
+	{ReplyToMessageParameter}
+	':reply-to' '(' 'set' (agentIdentifiers+=AgentIdentifier)* ')';
+
+LanguageMessageParameter returns LanguageMessageParameter:
+	':language' expression=Expression
+;
+
+EncodingMessageParameter returns EncodingMessageParameter:
+	':encoding' expression=Expression
+;
+
+OntologyMessageParameter returns OntologyMessageParameter:
+	':ontology' expression=Expression
+;
+
+ProtocolMessageParameter returns ProtocolMessageParameter:
+	':protocol' protocol=STRING
+;
+ConversationIdMessageParameter returns ConversationIdMessageParameter:
+	':conversation-id' expression=Expression
+;
+
+UserDefinedMessageParameter returns UserDefinedMessageParameter:
+	identifier=USERDEFINED_PARAMETER expression=Expression
+;
+
 AgentIdentifier returns AgentIdentifier:
 	'(' 'agent-identifier' ':name' name=ID
 	(':addresses' '(' 'sequence' (addresses+=URL)* ')')?
@@ -23,7 +82,11 @@ AgentIdentifier returns AgentIdentifier:
 	')';
 
 Expression returns Expression:
-	StringExpression | NumberExpression;
+	StringExpression | 
+	NumberExpression | 
+	DateTimeExpression |
+	NestedExpression
+	;
 
 StringExpression returns StringExpression:
 	value=STRING;
@@ -36,6 +99,16 @@ IntegerExpression returns IntegerExpression:
 
 FloatExpression returns FloatExpression:
 	value=FLOAT;
+	
+DateTimeExpression returns DateTimeExpression:
+	dateTime=DATE_TIME
+;
+
+NestedExpression returns NestedExpression:
+	{NestedExpression} 
+	'(' (expressions+=Expression)* ')'
+;
+
 
 enum MessageType returns MessageType:
 	AcceptProposal='accept-proposal' |
@@ -64,10 +137,34 @@ enum MessageType returns MessageType:
 	/**
  * +++++++++++++++ TERMINALS +++++++++++++++
  */
+ 
+ terminal DATE_TIME returns DateTime:
+ 	SIGN? YEAR 
+ 	/*Month*/DOUBLE_DIGIT
+ 	/*Day*/DOUBLE_DIGIT
+ 	'T'
+ 	/*Hour*/DOUBLE_DIGIT
+ 	/*Minute*/DOUBLE_DIGIT
+ 	/*Second*/DOUBLE_DIGIT
+ 	/*Millisecond*/TRIPLE_DIGIT
+ 	('a'..'z' | 'A'..'Z')?
+ ;
+ 
+ terminal fragment YEAR:
+ 	DIGIT DIGIT DIGIT DIGIT
+ ;
+ 
+ terminal fragment DOUBLE_DIGIT:
+ 	DIGIT DIGIT
+ ;
+ terminal fragment TRIPLE_DIGIT:
+ 	DIGIT DIGIT DIGIT
+ ;
+ 
 terminal USERDEFINED_PARAMETER returns ecore::EString:
 	':x-' ID ('-' ID)*;
 
-	/**
+/**
   * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
   */
 terminal URL returns ecore::EString:
