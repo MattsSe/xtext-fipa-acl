@@ -40,7 +40,7 @@ ReplyWithMessageParameter returns ReplyWithMessageParameter:
 ;
 
 ReplyByMessageParameter returns ReplyByMessageParameter:
-	':reply-by' dateTime=DATE_TIME
+	':reply-by' dateTime=AclDateTime
 ;
 
 InReplyToMessageParameter returns InReplyToMessageParameter:
@@ -101,7 +101,7 @@ FloatExpression returns FloatExpression:
 	value=FLOAT;
 	
 DateTimeExpression returns DateTimeExpression:
-	dateTime=DATE_TIME
+	dateTime=AclDateTime
 ;
 
 NestedExpression returns NestedExpression:
@@ -109,6 +109,10 @@ NestedExpression returns NestedExpression:
 	'(' (expressions+=Expression)* ')'
 ;
 
+
+AclDateTime returns AclDateTime:
+	(relative=SIGN)? dateTime=DATE_TIME
+;
 
 enum MessageType returns MessageType:
 	AcceptProposal='accept-proposal' |
@@ -139,7 +143,7 @@ enum MessageType returns MessageType:
  */
  
  terminal DATE_TIME returns DateTime:
- 	SIGN? YEAR 
+ 	YEAR 
  	/*Month*/DOUBLE_DIGIT
  	/*Day*/DOUBLE_DIGIT
  	'T'
@@ -209,7 +213,7 @@ terminal fragment FLOATEXPONENT:
 terminal fragment EXPONENT:
 	'e' | 'E';
 
-terminal fragment SIGN:
+terminal SIGN:
 	'+' | '-';
 
 terminal ID:

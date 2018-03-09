@@ -27,7 +27,6 @@ class FLOATValueConverter extends AbstractLexerBasedConverter<Double> {
 			}
 			return value
 		}
-		throw new ValueConverterException("Invalid value.", node, null);
-
+		throw new ValueConverterException('''Invalid value. '«s»' is not a valid float expression. ''', node, null)
 	}
 }

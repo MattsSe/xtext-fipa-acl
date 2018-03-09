@@ -1,6 +1,6 @@
 @Ecore(nsPrefix="acl", nsURI="http://www.tum.de/ais/acl/Acl")
-@GenModel(bundleManifest="false", modelDirectory="de.tum.ais.alc.model/src/main/src-gen", updateClasspath="false",
-	complianceLevel="8.0")
+@GenModel(bundleManifest="false", forceOverwrite="true", modelDirectory="de.tum.ais.alc.model/build/xcore/main",
+	updateClasspath="false", complianceLevel="8.0")
 package de.tum.ais.acl
 
 import java.net.URI
@@ -12,31 +12,16 @@ type URI wraps URI
 
 class AclMessage {
 	MessageType messageType
-	contains MessageParameter[] messageParameters
+	contains MessageParameter[] messageParameters opposite message
+	op String getLanguage() {
+		messageParameters.filter(LanguageMessageParameter).map[m|m.stringValue]?.head
+	}
 }
 
 interface MessageParameter {
-	 op String getIdentifier()
+	op String getIdentifier()
+	container AclMessage message opposite messageParameters
 }
-
-/* 
-enum MessageParameterType {
-	userdefined
-	sender = 1
-	reciever = 2
-	content = 2
-	reply-with = 3
-	reciever = 4
-	reciever = 5
-	reciever = 6
-	reciever = 7
-	reciever = 8
-	reciever = 9
-	reciever = 10
-	reciever = 11
-	reciever = 12
-}
-* */
 
 class SenderMessageParameter extends MessageParameter {
 	unsettable String intendifier = "sender"
@@ -51,10 +36,20 @@ class RecieverMessageParameter extends MessageParameter {
 class ContentMessageParameter extends MessageParameter {
 	unsettable String intendifier = "content"
 	String content
+	op boolean isLanguage(String s) {
+		if (s.nullOrEmpty || content.nullOrEmpty) {
+			false
+		} else {
+			s.equals(message?.language)
+		}
+	}
 }
 
 interface ExpressionMessageParameter extends MessageParameter {
 	contains Expression expression
+	op String getStringValue() {
+		expression.stringValue
+	}
 }
 
 class ReplyWithMessageParameter extends ExpressionMessageParameter {
@@ -63,7 +58,7 @@ class ReplyWithMessageParameter extends ExpressionMessageParameter {
 
 class ReplyByMessageParameter extends MessageParameter {
 	unsettable String intendifier = "reply-by"
-	DateTime dateTime
+	contains AclDateTime dateTime
 }
 
 class InReplyToMessageParameter extends ExpressionMessageParameter {
@@ -139,7 +134,6 @@ class FloatExpression extends NumberExpression {
 	}
 }
 
-
 class NestedExpression extends NumberExpression {
 	contains Expression[] expressions
 	op String getStringValue() {
@@ -148,10 +142,15 @@ class NestedExpression extends NumberExpression {
 }
 
 class DateTimeExpression extends Expression {
-	DateTime dateTime
+	contains AclDateTime dateTime
 	op String getStringValue() {
 		dateTime.toString
 	}
+}
+
+class AclDateTime {
+	String relative
+	DateTime dateTime
 }
 
 /**
