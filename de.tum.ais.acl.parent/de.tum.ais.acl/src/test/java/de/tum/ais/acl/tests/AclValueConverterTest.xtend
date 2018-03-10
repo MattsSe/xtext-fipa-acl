@@ -4,8 +4,12 @@ import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Key
 import de.tum.ais.acl.AclStandaloneSetup
+import de.tum.ais.acl.convert.DateTimeValueConverter
 import de.tum.ais.acl.convert.FLOATValueConverter
 import de.tum.ais.acl.convert.UserdefinedParameterValueConverter
+import java.text.SimpleDateFormat
+import java.util.GregorianCalendar
+import javax.xml.datatype.DatatypeFactory
 import org.eclipse.xtext.GrammarUtil
 import org.eclipse.xtext.IGrammarAccess
 import org.eclipse.xtext.conversion.ValueConverterWithValueException
@@ -15,6 +19,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+import javax.xml.datatype.XMLGregorianCalendar
 
 class AclValueConverterTest {
 
@@ -23,6 +28,7 @@ class AclValueConverterTest {
 
 	private FLOATValueConverter floatValueConverter
 	private UserdefinedParameterValueConverter userdefinedParamValueConverter
+	private DateTimeValueConverter dateTimeValueConverter
 
 	@BeforeClass
 	public static def void staticSetup() {
@@ -42,6 +48,8 @@ class AclValueConverterTest {
 		userdefinedParamValueConverter = get(UserdefinedParameterValueConverter)
 		userdefinedParamValueConverter.setRule(
 			GrammarUtil.findRuleForName(getGrammarAccess().getGrammar(), "USERDEFINED_PARAMETER"))
+		dateTimeValueConverter = get(DateTimeValueConverter)
+		dateTimeValueConverter.setRule(GrammarUtil.findRuleForName(getGrammarAccess().getGrammar(), "DATE_TIME"))
 	}
 
 	@Test public def void userdefinedParamConvertToStringTest() {
@@ -59,6 +67,40 @@ class AclValueConverterTest {
 		}
 	}
 
+	@Test public def void datetimeConvertToStringTest() {
+		val sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss")
+		val s = "31-08-1982 10:20:56";
+		val date = sdf.parse(s)
+		val calendar = new GregorianCalendar()
+		calendar.time = date
+		val dt = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar)
+		val toString = dateTimeValueConverter.toString(dt)
+		Assert.assertEquals("19820831T102056000", toString)
+	}
+
+	@Test public def void datetimeConvertToValueTest_1() {
+		val sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss")
+		val s = "31-08-1982 10:20:56";
+		val date = sdf.parse(s)
+		try {
+			dateTimeValueConverter.toValue("19820831T102056000", null);
+		} catch (ValueConverterWithValueException e) {
+			val cal = e.getValue() as XMLGregorianCalendar
+			Assert.assertEquals(date, cal.toGregorianCalendar.time);
+		}
+	}
+	@Test public def void datetimeConvertToValueTest_2() {
+		val sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss")
+		val s = "31-08-1982 10:20:56";
+		val date = sdf.parse(s)
+		try {
+			dateTimeValueConverter.toValue("19820831T102056000Z", null);
+		} catch (ValueConverterWithValueException e) {
+			val cal = e.getValue() as XMLGregorianCalendar
+			Assert.assertEquals(date, cal.toGregorianCalendar.time);
+		}
+	}
+
 	@Test public def void floatExpressionToValueTest_1() {
 		val input = "10.0"
 		try {
@@ -67,6 +109,7 @@ class AclValueConverterTest {
 			Assert.assertEquals(10.0, e.getValue())
 		}
 	}
+
 	@Test public def void floatExpressionToValueTest_2() {
 		val input = "-10.0"
 		try {
@@ -75,6 +118,7 @@ class AclValueConverterTest {
 			Assert.assertEquals(-10.0, e.getValue())
 		}
 	}
+
 	@Test public def void floatExpressionToValueTest_3() {
 		val input = "10.0e5"
 		try {
@@ -83,6 +127,7 @@ class AclValueConverterTest {
 			Assert.assertEquals(100000.0, e.getValue())
 		}
 	}
+
 	@Test public def void floatExpressionToValueTest_4() {
 		val input = "10.0E-5"
 		try {
@@ -91,6 +136,7 @@ class AclValueConverterTest {
 			Assert.assertEquals(0.00001, e.getValue())
 		}
 	}
+
 	@Test public def void floatExpressionToValueTest_5() {
 		val input = "-10.0E-5"
 		try {
@@ -99,6 +145,7 @@ class AclValueConverterTest {
 			Assert.assertEquals(-0.00001, e.getValue())
 		}
 	}
+
 	@Test public def void floatExpressionToValueTest_6() {
 		val input = "-.0E-5"
 		try {
@@ -107,6 +154,7 @@ class AclValueConverterTest {
 			Assert.assertEquals(0.0, e.getValue())
 		}
 	}
+
 	@Test public def void floatExpressionToValueTest_7() {
 		val input = "-0.E-5"
 		try {

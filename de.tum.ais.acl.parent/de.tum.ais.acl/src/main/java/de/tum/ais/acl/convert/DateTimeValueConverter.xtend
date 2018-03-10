@@ -34,6 +34,6 @@ class DateTimeValueConverter extends AbstractLexerBasedConverter<XMLGregorianCal
 	}
 
 	override toString(XMLGregorianCalendar value) {
-		ISO8601.format(value)
+		ISO8601.format(value.toGregorianCalendar.time)
 	}
 }
