@@ -9,8 +9,8 @@ AclMessage returns AclMessage:
 	'(' messageType=MessageType (messageParameters+=MessageParameter)* ')';
 
 MessageParameter returns MessageParameter:
-	SenderMessageParameter | 
-	RecieverMessageParameter | 
+	SenderMessageParameter |
+	RecieverMessageParameter |
 	ContentMessageParameter |
 	ReplyWithMessageParameter |
 	ReplyByMessageParameter |
@@ -21,8 +21,7 @@ MessageParameter returns MessageParameter:
 	OntologyMessageParameter |
 	ProtocolMessageParameter |
 	ConversationIdMessageParameter |
-	UserDefinedMessageParameter
-	;
+	UserDefinedMessageParameter;
 
 SenderMessageParameter returns SenderMessageParameter:
 	':sender' agentIdentifier=AgentIdentifier;
@@ -32,47 +31,38 @@ RecieverMessageParameter returns RecieverMessageParameter:
 	':receiver' '(' 'set' (agentIdentifiers+=AgentIdentifier)* ')';
 
 ContentMessageParameter returns ContentMessageParameter:
-	':content' content=STRING
-;
+	':content' content=STRING;
 
 ReplyWithMessageParameter returns ReplyWithMessageParameter:
-	':reply-with' expression=Expression
-;
+	':reply-with' expression=Expression;
 
 ReplyByMessageParameter returns ReplyByMessageParameter:
-	':reply-by' dateTime=AclDateTime
-;
+	':reply-by' dateTime=AclDateTime;
 
 InReplyToMessageParameter returns InReplyToMessageParameter:
-	':in-reply-to' expression=Expression
-;
+	':in-reply-to' expression=Expression;
 
 ReplyToMessageParameter returns ReplyToMessageParameter:
 	{ReplyToMessageParameter}
 	':reply-to' '(' 'set' (agentIdentifiers+=AgentIdentifier)* ')';
 
 LanguageMessageParameter returns LanguageMessageParameter:
-	':language' expression=Expression
-;
+	':language' expression=Expression;
 
 EncodingMessageParameter returns EncodingMessageParameter:
-	':encoding' expression=Expression
-;
+	':encoding' expression=Expression;
 
 OntologyMessageParameter returns OntologyMessageParameter:
-	':ontology' expression=Expression
-;
+	':ontology' expression=Expression;
 
 ProtocolMessageParameter returns ProtocolMessageParameter:
-	':protocol' protocol=STRING
-;
+	':protocol' protocol=WORD;
+
 ConversationIdMessageParameter returns ConversationIdMessageParameter:
-	':conversation-id' expression=Expression
-;
+	':conversation-id' expression=Expression;
 
 UserDefinedMessageParameter returns UserDefinedMessageParameter:
-	identifier=USERDEFINED_PARAMETER expression=Expression
-;
+	identifier=USERDEFINED_PARAMETER expression=Expression;
 
 AgentIdentifier returns AgentIdentifier:
 	'(' 'agent-identifier' ':name' name=ID
@@ -82,11 +72,10 @@ AgentIdentifier returns AgentIdentifier:
 	')';
 
 Expression returns Expression:
-	StringExpression | 
-	NumberExpression | 
+	StringExpression |
+	NumberExpression |
 	DateTimeExpression |
-	NestedExpression
-	;
+	NestedExpression;
 
 StringExpression returns StringExpression:
 	value=STRING;
@@ -99,20 +88,16 @@ IntegerExpression returns IntegerExpression:
 
 FloatExpression returns FloatExpression:
 	value=FLOAT;
-	
+
 DateTimeExpression returns DateTimeExpression:
-	dateTime=AclDateTime
-;
+	dateTime=AclDateTime;
 
 NestedExpression returns NestedExpression:
-	{NestedExpression} 
-	'(' (expressions+=Expression)* ')'
-;
-
+	{NestedExpression}
+	'(' (expressions+=Expression)* ')';
 
 AclDateTime returns AclDateTime:
-	(relative=SIGN)? dateTime=DATE_TIME
-;
+	(relative=SIGN)? dateTime=DATE_TIME;
 
 enum MessageType returns MessageType:
 	AcceptProposal='accept-proposal' |
@@ -141,34 +126,50 @@ enum MessageType returns MessageType:
 	/**
  * +++++++++++++++ TERMINALS +++++++++++++++
  */
- 
- terminal DATE_TIME returns DateTime:
- 	YEAR 
- 	/*Month*/DOUBLE_DIGIT
- 	/*Day*/DOUBLE_DIGIT
- 	'T'
- 	/*Hour*/DOUBLE_DIGIT
- 	/*Minute*/DOUBLE_DIGIT
- 	/*Second*/DOUBLE_DIGIT
- 	/*Millisecond*/TRIPLE_DIGIT
- 	('a'..'z' | 'A'..'Z')?
- ;
- 
- terminal fragment YEAR:
- 	DIGIT DIGIT DIGIT DIGIT
- ;
- 
- terminal fragment DOUBLE_DIGIT:
- 	DIGIT DIGIT
- ;
- terminal fragment TRIPLE_DIGIT:
- 	DIGIT DIGIT DIGIT
- ;
- 
+
+
+//[~ "\0x00" – "\0x20", "(", ")", "#", "0" – "9", "-", "@"]
+//[~ "\0x00" – "\0x20", "(", ")"]*
+terminal WORD:
+	(ASCII_IDENT | '(' | ')' '#' | '0..9' | '-' | '@') (ASCII_IDENT | '(' |')')*;
+
+terminal fragment ASCII_IDENT:
+	'0x00..0x20';
+
+/*
+  * A length encoded string is a context sensitive lexical token. Its meaning is as follows: 
+  * the message envelope of the token is everything from the leading # to the separator " (inclusive). 
+  * Between the markers of the message envelope is a decimal number with at least one digit. 
+  * This digit then determines that exactly that number of 8-bit bytes are to be consumed as part of the token, without restriction.
+  *  It is a lexical error for less than that number of bytes to be available.
+  */
+terminal BYTE_LENGHT_ENCODED_STRING:
+	'#' DIGIT+ '"' ('a'..'f' | 'A'..'F' | '0'..'9')+;
+
+terminal DATE_TIME returns DateTime:
+	YEAR
+	/*Month*/ DOUBLE_DIGIT
+	/*Day*/ DOUBLE_DIGIT
+	'T'
+	/*Hour*/ DOUBLE_DIGIT
+	/*Minute*/ DOUBLE_DIGIT
+	/*Second*/ DOUBLE_DIGIT
+	/*Millisecond*/ TRIPLE_DIGIT
+	('a'..'z' | 'A'..'Z')?;
+
+terminal fragment YEAR:
+	DIGIT DIGIT DIGIT DIGIT;
+
+terminal fragment DOUBLE_DIGIT:
+	DIGIT DIGIT;
+
+terminal fragment TRIPLE_DIGIT:
+	DIGIT DIGIT DIGIT;
+
 terminal USERDEFINED_PARAMETER returns ecore::EString:
 	':x-' ID ('-' ID)*;
 
-/**
+	/**
   * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
   */
 terminal URL returns ecore::EString:
