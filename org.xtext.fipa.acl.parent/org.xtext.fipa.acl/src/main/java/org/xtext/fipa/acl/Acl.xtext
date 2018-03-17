@@ -1,0 +1,241 @@
+grammar org.xtext.fipa.acl.Acl hidden(WS, ML_COMMENT, SL_COMMENT) //with org.eclipse.xtext.common.Terminals
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+import "http://www.xtext.fipa.acl.org/fipa/acl"
+
+// http://www.fipa.org/specs/fipa00037/SC00037J.pdf
+// http://www.fipa.org/specs/fipa00070/SC00070I.html
+// https://books.google.de/books?id=qlBt_IV5OXkC&pg=PA101&lpg=PA101&dq=acl+message+protocol&source=bl&ots=1cZV8BxSnR&sig=DJoaA8znJdqMw62uRByOGl2me7o&hl=de&sa=X&ved=0ahUKEwjsqq3ax9XZAhUQaVAKHX-vBCEQ6AEIfDAJ#v=onepage&q=acl%20message%20protocol&f=false
+AclMessage returns AclMessage:
+	'(' messageType=MessageType (messageParameters+=MessageParameter)* ')';
+
+MessageParameter returns MessageParameter:
+	SenderMessageParameter |
+	RecieverMessageParameter |
+	ContentMessageParameter |
+	ReplyWithMessageParameter |
+	ReplyByMessageParameter |
+	InReplyToMessageParameter |
+	ReplyToMessageParameter |
+	LanguageMessageParameter |
+	EncodingMessageParameter |
+	OntologyMessageParameter |
+	ProtocolMessageParameter |
+	ConversationIdMessageParameter |
+	UserDefinedMessageParameter;
+
+SenderMessageParameter returns SenderMessageParameter:
+	':sender' agentIdentifier=AgentIdentifier;
+
+RecieverMessageParameter returns RecieverMessageParameter:
+	{RecieverMessageParameter}
+	':receiver' '(' 'set' (agentIdentifiers+=AgentIdentifier)* ')';
+
+ContentMessageParameter returns ContentMessageParameter:
+	':content' content=STRING;
+
+ReplyWithMessageParameter returns ReplyWithMessageParameter:
+	':reply-with' expression=Expression;
+
+ReplyByMessageParameter returns ReplyByMessageParameter:
+	':reply-by' dateTime=AclDateTime;
+
+InReplyToMessageParameter returns InReplyToMessageParameter:
+	':in-reply-to' expression=Expression;
+
+ReplyToMessageParameter returns ReplyToMessageParameter:
+	{ReplyToMessageParameter}
+	':reply-to' '(' 'set' (agentIdentifiers+=AgentIdentifier)* ')';
+
+LanguageMessageParameter returns LanguageMessageParameter:
+	':language' expression=Expression;
+
+EncodingMessageParameter returns EncodingMessageParameter:
+	':encoding' expression=Expression;
+
+OntologyMessageParameter returns OntologyMessageParameter:
+	':ontology' expression=Expression;
+
+ProtocolMessageParameter returns ProtocolMessageParameter:
+	':protocol' protocol=WORD;
+
+ConversationIdMessageParameter returns ConversationIdMessageParameter:
+	':conversation-id' expression=Expression;
+
+UserDefinedMessageParameter returns UserDefinedMessageParameter:
+	identifier=USERDEFINED_PARAMETER expression=Expression;
+
+AgentIdentifier returns AgentIdentifier:
+	'(' 'agent-identifier' ':name' name=ID
+	(':addresses' '(' 'sequence' (addresses+=URL)* ')')?
+	(':resolvers' '(' 'sequence' (resolvers+=AgentIdentifier)* ')')?
+	(USERDEFINED_PARAMETER userDefinedParameter+=Expression)*
+	')';
+
+Expression returns Expression:
+	StringExpression |
+	NumberExpression |
+	DateTimeExpression |
+	NestedExpression;
+
+StringExpression returns StringExpression:
+	value=STRING;
+
+NumberExpression returns NumberExpression:
+	IntegerExpression | FloatExpression;
+
+IntegerExpression returns IntegerExpression:
+	value=INTEGER;
+
+FloatExpression returns FloatExpression:
+	value=FLOAT;
+
+DateTimeExpression returns DateTimeExpression:
+	dateTime=AclDateTime;
+
+NestedExpression returns NestedExpression:
+	{NestedExpression}
+	'(' (expressions+=Expression)* ')';
+
+AclDateTime returns AclDateTime:
+	(relative=SIGN)? dateTime=DATE_TIME;
+
+enum MessageType returns MessageType:
+	AcceptProposal='accept-proposal' |
+	Agree='agree' |
+	Cancel='cancel' |
+	CallForProposal='cfp' |
+	Confirm='confirm' |
+	DisConfirm='disconfirm' |
+	Failure='failure' |
+	Inform='inform' |
+	InformIf='inform-if' |
+	InformRef='inform-ref' |
+	NotUnderstood='not-understood' |
+	Propagate='propagate' |
+	Propose='propose' |
+	Proxy='proxy' |
+	QueryIf='query-if' |
+	QueryRef='query-ref' |
+	Refuse='refuse' |
+	RejectProposal='reject-proposal' |
+	Request='request' |
+	RequestWhen='request-when' |
+	RequestWhenever='request-whenever' |
+	Subscribe='subscribe';
+
+	/**
+ * +++++++++++++++ TERMINALS +++++++++++++++
+ */
+
+
+//[~ "\0x00" – "\0x20", "(", ")", "#", "0" – "9", "-", "@"]
+//[~ "\0x00" – "\0x20", "(", ")"]*
+terminal WORD:
+	(ASCII_IDENT | '(' | ')' '#' | '0..9' | '-' | '@') (ASCII_IDENT | '(' |')')*;
+
+terminal fragment ASCII_IDENT:
+	'0x00..0x20';
+
+/*
+  * A length encoded string is a context sensitive lexical token. Its meaning is as follows: 
+  * the message envelope of the token is everything from the leading # to the separator " (inclusive). 
+  * Between the markers of the message envelope is a decimal number with at least one digit. 
+  * This digit then determines that exactly that number of 8-bit bytes are to be consumed as part of the token, without restriction.
+  *  It is a lexical error for less than that number of bytes to be available.
+  */
+terminal BYTE_LENGHT_ENCODED_STRING:
+	'#' DIGIT+ '"' ('a'..'f' | 'A'..'F' | '0'..'9')+;
+
+terminal DATE_TIME returns DateTime:
+	YEAR
+	/*Month*/ DOUBLE_DIGIT
+	/*Day*/ DOUBLE_DIGIT
+	'T'
+	/*Hour*/ DOUBLE_DIGIT
+	/*Minute*/ DOUBLE_DIGIT
+	/*Second*/ DOUBLE_DIGIT
+	/*Millisecond*/ TRIPLE_DIGIT
+	('a'..'z' | 'A'..'Z')?;
+
+terminal fragment YEAR:
+	DIGIT DIGIT DIGIT DIGIT;
+
+terminal fragment DOUBLE_DIGIT:
+	DIGIT DIGIT;
+
+terminal fragment TRIPLE_DIGIT:
+	DIGIT DIGIT DIGIT;
+
+terminal USERDEFINED_PARAMETER returns ecore::EString:
+	':x-' ID ('-' ID)*;
+
+	/**
+  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+  */
+terminal URL returns ecore::EString:
+	ID '://' LOGIN? HOST (':' DIGIT+)? ('/' PATH)? ('?' SEARCH)? ('#' ID)?;
+
+terminal fragment LOGIN:
+	ID ':' .* '@';
+
+terminal fragment HOST:
+	'/'? (ID ('.' ID)* | HOSTNUMBER);
+
+terminal HOSTNUMBER:
+	DIGIT+ '.' DIGIT+ '.' DIGIT+ '.' DIGIT+;
+
+terminal fragment PATH:
+	ID ('/' ID)*;
+
+terminal SEARCH:
+	SEARCHPARAMETER ('&' SEARCHPARAMETER)*;
+
+terminal fragment SEARCHPARAMETER:
+	ID ('=' (ID | DIGIT+ | HEX))?;
+
+terminal HEX:
+	('%' ('a'..'f' | 'A'..'F' | '0'..'9') ('a'..'f' | 'A'..'F' | '0'..'9'))+;
+
+terminal INTEGER returns ecore::EInt:
+	SIGN? DIGIT+;
+
+terminal FLOAT returns ecore::EDouble:
+	(SIGN? FLOATMANTISSA FLOATEXPONENT?) | (SIGN? DIGIT+ FLOATEXPONENT);
+
+terminal FLOATMANTISSA returns ecore::EDouble:
+	(DIGIT+ '.' DIGIT+) | (DIGIT+ '.') | ('.' DIGIT+);
+
+terminal fragment DIGIT:
+	'0'..'9';
+
+terminal fragment FLOATEXPONENT:
+	EXPONENT SIGN? DIGIT+;
+
+terminal fragment EXPONENT:
+	'e' | 'E';
+
+terminal SIGN:
+	'+' | '-';
+
+terminal ID:
+	'^'? ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*;
+	//terminal INT returns ecore::EInt: ('0'..'9')+;
+terminal STRING_LITERAL:
+	'"' ('\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\' | '"'))* '"' |
+	"'" ('\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\' | "'"))* "'";
+
+terminal STRING:
+	STRING_LITERAL | BYTE_LENGHT_ENCODED_STRING
+;
+
+terminal ML_COMMENT:
+	'/*'->'*/';
+
+terminal SL_COMMENT:
+	'//' !('\n' | '\r')* ('\r'? '\n')?;
+
+terminal WS:
+	(' ' | '\t' | '\r' | '\n')+;
+
+terminal ANY_OTHER:
+	.;

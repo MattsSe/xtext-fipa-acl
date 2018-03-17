@@ -1,0 +1,183 @@
+@Ecore(nsPrefix="acl", nsURI="http://www.xtext.fipa.acl.org/fipa/acl")
+@GenModel(bundleManifest="false", forceOverwrite="true", modelDirectory="org.xtext.fipa.acl.model/build/xcore/main",
+	updateClasspath="false", complianceLevel="8.0")
+package org.xtext.fipa.acl
+
+import java.net.URI
+import javax.xml.datatype.XMLGregorianCalendar
+
+type DateTime wraps XMLGregorianCalendar
+
+type URI wraps URI
+
+class AclMessage {
+	MessageType messageType
+	contains MessageParameter[] messageParameters opposite message
+	op String getLanguage() {
+		messageParameters.filter(LanguageMessageParameter).map[m|m.stringValue]?.head
+	}
+}
+
+interface MessageParameter {
+	op String getIdentifier()
+	container AclMessage message opposite messageParameters
+}
+
+class SenderMessageParameter extends MessageParameter {
+	unsettable String intendifier = "sender"
+	contains AgentIdentifier agentIdentifier
+}
+
+class RecieverMessageParameter extends MessageParameter {
+	unsettable String intendifier = "reciever"
+	contains AgentIdentifier[] agentIdentifiers
+}
+
+class ContentMessageParameter extends MessageParameter {
+	unsettable String intendifier = "content"
+	String content
+	op boolean isLanguage(String s) {
+		if (s.nullOrEmpty || content.nullOrEmpty) {
+			false
+		} else {
+			s.equals(message?.language)
+		}
+	}
+}
+
+interface ExpressionMessageParameter extends MessageParameter {
+	contains Expression expression
+	op String getStringValue() {
+		expression.stringValue
+	}
+}
+
+class ReplyWithMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "reply-with"
+}
+
+class ReplyByMessageParameter extends MessageParameter {
+	unsettable String intendifier = "reply-by"
+	contains AclDateTime dateTime
+}
+
+class InReplyToMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "in-reply-to"
+}
+
+class ReplyToMessageParameter extends MessageParameter {
+	unsettable String intendifier = "reply-to"
+	contains AgentIdentifier[] agentIdentifiers
+}
+
+class LanguageMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "language"
+}
+
+class EncodingMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "encoding"
+}
+
+class OntologyMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "ontology"
+}
+
+class ConversationIdMessageParameter extends ExpressionMessageParameter {
+	unsettable String intendifier = "conversation-id"
+}
+
+class UserDefinedMessageParameter extends ExpressionMessageParameter {
+	String identifier
+}
+
+class ProtocolMessageParameter extends MessageParameter {
+	unsettable String intendifier = "protocol"
+	String protocol
+}
+
+class AgentIdentifier {
+	String name
+	String[] addresses
+	contains Expression[] userDefinedParameter
+	contains AgentIdentifier[] resolvers
+}
+
+interface Expression {
+	op String getStringValue()
+}
+
+class StringExpression extends Expression {
+	String value
+	op String getStringValue() {
+		value
+	}
+}
+
+interface NumberExpression extends Expression {
+	op double getNumberValue()
+	op String getStringValue() {
+		this.getNumberValue().toString
+	}
+}
+
+class IntegerExpression extends NumberExpression {
+	int value
+	op double getNumberValue() {
+		value
+	}
+}
+
+class FloatExpression extends NumberExpression {
+	double value
+	op double getNumberValue() {
+		value
+	}
+}
+
+class NestedExpression extends NumberExpression {
+	contains Expression[] expressions
+	op String getStringValue() {
+		expressions.join(", ")
+	}
+}
+
+class DateTimeExpression extends Expression {
+	contains AclDateTime dateTime
+	op String getStringValue() {
+		dateTime.toString
+	}
+}
+
+class AclDateTime {
+	String relative
+	DateTime dateTime
+}
+
+/**
+ * @see http://www.fipa.org/specs/fipa00037/SC00037J.pdf
+ */
+enum MessageType {
+	AcceptProposal
+	Agree
+	Cancel
+	CallForProposal
+	Confirm
+	DisConfirm
+	Failure
+	Inform
+	InformIf
+	InformRef
+	NotUnderstood
+	Propagate
+	Propose
+	Proxy
+	QueryIf
+	QueryRef
+	Refuse
+	RejectProposal
+	Request
+	RequestWhen
+	RequestWhenever
+	Subscribe
+}
+	

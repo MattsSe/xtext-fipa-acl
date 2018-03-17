@@ -1,0 +1,2 @@
+include 'org.xtext.fipa.acl'
+include 'org.xtext.fipa.acl.model'
