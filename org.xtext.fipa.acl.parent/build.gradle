@@ -1,37 +1,39 @@
 buildscript {
-	repositories {
-		jcenter()
-	}
-	dependencies {
-		classpath 'org.xtext:xtext-gradle-plugin:1.0.19'
-	}
+    repositories {
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'org.xtext:xtext-gradle-plugin:1.0.21'
+    }
 }
 
-apply from: "${rootDir}/gradle/versions.gradle"
+def gradleDir = "${projectDir}/gradle"
+
+apply from: "${gradleDir}/versions.gradle"
 
 subprojects {
-	ext.xtextVersion = '2.13.0-SNAPSHOT'
-	repositories {
-		jcenter()
-		maven {
-			url 'https://oss.sonatype.org/content/repositories/snapshots'
-		}
-	}
-	
-	apply plugin: 'java'
-	apply plugin: 'org.xtext.xtend'
-	apply from: "${rootDir}/gradle/source-layout.gradle"
-	apply from: "${rootDir}/gradle/maven-deployment.gradle"
-	apply plugin: 'eclipse'
-	apply plugin: 'idea'
-	
-	group = 'de.tum.ais.acl'
-	version = "$version"
-	
-	sourceCompatibility = '1.8'
-	targetCompatibility = '1.8'
-	
-	configurations.all {
-		exclude group: 'asm'
-	}
+    ext.xtextVersion = '2.14.0'
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    apply plugin: 'java'
+    apply plugin: 'org.xtext.xtend'
+    apply from: "${gradleDir}/source-layout.gradle"
+    apply from: "${gradleDir}/maven-deployment.gradle"
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    group = 'org.xtext.fipa.acl'
+    version = "$version"
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    configurations.all {
+        exclude group: 'asm'
+    }
 }

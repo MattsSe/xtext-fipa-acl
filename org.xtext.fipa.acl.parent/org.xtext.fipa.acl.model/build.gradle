@@ -1,33 +1,14 @@
 dependencies {
-    testCompile "junit:junit:$versions.junit"
-    compile "org.eclipse.xtext:org.eclipse.xtext.xbase:$versions.xtext"
+    compile "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
     compile 'org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib:+'
-    compile 'org.eclipse.emf:org.eclipse.emf.common:+'
-    compile 'org.eclipse.emf:org.eclipse.emf.ecore:+'
-    compile 'org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib:+'
-    compile "org.eclipse.xtext:org.eclipse.xtext.xbase.lib:$versions.xtext"
-//	xtextLanguages "org.eclipse.emf:org.eclipse.emf.codegen:2.12+"
-//
-	xtextLanguages "org.eclipse.emf:org.eclipse.emf.mwe2.runtime:2.9.1+"
-	xtextLanguages "org.eclipse.emf:org.eclipse.emf.mwe2.launch:2.9.1+"
 
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.ecore.xcore:+'
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib:+'
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.codegen.ecore:+'
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.codegen.ecore.xtext:+'
-    xtextLanguages "org.eclipse.xtext:org.eclipse.xtext.ecore:$versions.xtext"
-    xtextLanguages 'org.eclipse.jdt:org.eclipse.jdt.core:+'
-    xtextLanguages 'org.eclipse.text:org.eclipse.text:+'
-    xtextLanguages 'org.eclipse.core:org.eclipse.core.resources:+'
-    xtextLanguages "org.eclipse.xtext:org.eclipse.xtext.ecore:$versions.xtext"
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.codegen.ecore.xtext:+'
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.common:+'
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.ecore:+'
-    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:+'
+    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.mwe2.runtime:2.9.1.201705291010'
     xtextLanguages 'org.eclipse.emf:org.eclipse.emf.ecore.xcore:+'
     xtextLanguages 'org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib:+'
     xtextLanguages 'org.eclipse.emf:org.eclipse.emf.codegen:+'
-
+    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.codegen.ecore:+'
+    xtextLanguages 'org.eclipse.emf:org.eclipse.emf.codegen.ecore.xtext:+'
+    xtextLanguages "org.eclipse.xtext:org.eclipse.xtext.ecore:${xtextVersion}"
 }
 
 sourceSets {
@@ -38,14 +19,9 @@ sourceSets {
     }
 }
 
-
 xtext {
-    version = "$versions.xtext"
-    sourceSets {
-        main {
-            srcDir 'src/main/resources'
-        }
-    }
+    version = "${xtextVersion}"
+
     languages {
         ecore {
             setup = 'org.eclipse.xtext.ecore.EcoreSupport'
