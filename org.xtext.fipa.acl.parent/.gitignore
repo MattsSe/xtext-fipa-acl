@@ -4,3 +4,4 @@ xtend.gen/
 xtext_gen
 src-gen/
 build/
+!/gradle/wrapper/gradle-wrapper.jar

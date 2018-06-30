@@ -5,8 +5,6 @@ xtend-gen
 xtext-gen
 *.DS_Store
 
-gradle buildwrapper.jar
-gradle-wrapper.jar
 gradle-app.setting
 .env
 .gradle
