@@ -3,10 +3,10 @@ package org.xtext.fipa.acl.tests
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Key
-import de.tum.ais.acl.AclStandaloneSetup
-import de.tum.ais.acl.convert.DateTimeValueConverter
-import de.tum.ais.acl.convert.FLOATValueConverter
-import de.tum.ais.acl.convert.UserdefinedParameterValueConverter
+import org.xtext.fipa.acl.AclStandaloneSetup
+import org.xtext.fipa.acl.convert.DateTimeValueConverter
+import org.xtext.fipa.acl.convert.FLOATValueConverter
+import org.xtext.fipa.acl.convert.UserdefinedParameterValueConverter
 import java.text.SimpleDateFormat
 import java.util.GregorianCalendar
 import javax.xml.datatype.DatatypeFactory

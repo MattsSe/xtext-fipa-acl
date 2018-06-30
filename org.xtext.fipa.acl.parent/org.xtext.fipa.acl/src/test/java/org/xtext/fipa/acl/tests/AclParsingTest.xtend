@@ -4,12 +4,12 @@
 package org.xtext.fipa.acl.tests
 
 import com.google.inject.Inject
-import de.tum.ais.acl.AclMessage
-import de.tum.ais.acl.ContentMessageParameter
-import de.tum.ais.acl.InReplyToMessageParameter
-import de.tum.ais.acl.IntegerExpression
-import de.tum.ais.acl.MessageType
-import de.tum.ais.acl.SenderMessageParameter
+import org.xtext.fipa.acl.AclMessage
+import org.xtext.fipa.acl.ContentMessageParameter
+import org.xtext.fipa.acl.InReplyToMessageParameter
+import org.xtext.fipa.acl.IntegerExpression
+import org.xtext.fipa.acl.MessageType
+import org.xtext.fipa.acl.SenderMessageParameter
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -17,7 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static org.junit.Assert.*
-import de.tum.ais.acl.FloatExpression
+import org.xtext.fipa.acl.FloatExpression
 
 @RunWith(XtextRunner)
 @InjectWith(AclInjectorProvider)
