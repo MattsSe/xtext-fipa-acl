@@ -2,10 +2,10 @@
 apply plugin: 'maven'
 
 uploadArchives {
-	repositories {
-		mavenDeployer {
-			repository(url: "file://${buildDir}/localRepo")
-			snapshotRepository(url: "file://${buildDir}/localRepo")
-		}
-	}
+    repositories {
+        mavenDeployer {
+            repository(url: "file://${buildDir}/localRepo")
+            snapshotRepository(url: "file://${buildDir}/localRepo")
+        }
+    }
 }
