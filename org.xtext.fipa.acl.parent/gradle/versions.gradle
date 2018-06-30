@@ -1,8 +1,8 @@
-version = '1.0.0-SNAPSHOT'
+version = '1.0.1-SNAPSHOT'
 
 ext.versions = [
         guice    : '4.0',
-        xtext    : '2.13.0',
+        xtext    : '2.14.0',
         gson     : '2.8.0',
         websocket: '1.0',
         slf4j    : '1.7.24',

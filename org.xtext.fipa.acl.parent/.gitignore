@@ -2,6 +2,6 @@ bin/
 target/
 xtend.gen/
 xtext_gen
-src-gen/
 build/
+src-gen/
 !/gradle/wrapper/gradle-wrapper.jar
